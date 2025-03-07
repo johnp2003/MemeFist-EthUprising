@@ -347,10 +347,21 @@ export default function BattlePage() {
           </div>
         ) : (
           <div className="text-center py-12 bg-muted/50 rounded-lg">
-            <span className="block text-lg text-muted-foreground mb-4">
-              No entries yet. Be the first to join!
-            </span>
-            <Button onClick={handleJoinBattle}>Be the first!</Button>
+            {timeRemaining === 0 ? (
+              <div className="flex items-center justify-center space-x-2">
+                <LockKeyhole className="h-5 w-5 text-red-500" />
+                <span className="text-lg text-red-500 font-semibold">
+                  Battle Has Closed
+                </span>
+              </div>
+            ) : (
+              <>
+                <span className="block text-lg text-muted-foreground mb-4">
+                  No entries yet. Be the first to join!
+                </span>
+                <Button onClick={handleJoinBattle}>Be the first!</Button>
+              </>
+            )}
           </div>
         )}
       </div>
