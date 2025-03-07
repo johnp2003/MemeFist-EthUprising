@@ -19,16 +19,22 @@ import { formatDistanceToNow } from 'date-fns';
 
 // Load ABI from config
 const abi = require('@/config/abi.json');
-const contractAddress = '0x50c89cbc4Bde6D08f3f7624B422A9dEff9cCB772';
+const contractAddress = '0x602f79Fd56F69CdC32C0dA0B58B7c579AbF094f1';
 
 interface MemeCardProps {
   meme: Meme;
   showCategory?: boolean;
+  isUpvoting?: boolean;
+  onUpvoteStart?: () => void;
+  onUpvoteEnd?: () => void;
 }
 
 export default function MemeCard({
   meme,
   showCategory = false,
+  isUpvoting = false,
+  onUpvoteStart,
+  onUpvoteEnd,
 }: MemeCardProps) {
   const [upvotes, setUpvotes] = useState(Number(meme.upvotes));
   const [hasUpvoted, setHasUpvoted] = useState(false);
@@ -39,6 +45,8 @@ export default function MemeCard({
       return;
     }
     try {
+      onUpvoteStart?.(); // Signal start of upvote transaction
+
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(contractAddress, abi, signer);
@@ -50,6 +58,7 @@ export default function MemeCard({
 
       if (userAddress.toLowerCase() === creatorAddress.toLowerCase()) {
         toast.error('You cannot upvote your own meme!');
+        onUpvoteEnd?.(); // Signal end of upvote attempt
         return;
       }
 
@@ -60,6 +69,9 @@ export default function MemeCard({
       setHasUpvoted(true);
     } catch (error) {
       console.error('Upvote failed:', error);
+      alert('Failed to upvote. Please try again.');
+    } finally {
+      onUpvoteEnd?.(); // Signal end of upvote transaction
     }
   };
 
@@ -126,9 +138,19 @@ export default function MemeCard({
             size="sm"
             onClick={handleUpvote}
             className={hasUpvoted ? 'text-primary' : ''}
+            disabled={isUpvoting}
           >
-            <ThumbsUp className="h-4 w-4 mr-1" />
-            {upvotes}
+            {isUpvoting ? (
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                Upvoting...
+              </div>
+            ) : (
+              <>
+                <ThumbsUp className="h-4 w-4 mr-1" />
+                {upvotes}
+              </>
+            )}
           </Button>
         </div>
         <div className="flex space-x-2">

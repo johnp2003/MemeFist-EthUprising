@@ -11,7 +11,7 @@ import { ethers } from 'ethers';
 
 // Load ABI and contract address
 const abi = require('@/config/abi.json');
-const CONTRACT_ADDRESS = "0x50c89cbc4Bde6D08f3f7624B422A9dEff9cCB772"; // Replace with your actual contract address
+const CONTRACT_ADDRESS = '0x602f79Fd56F69CdC32C0dA0B58B7c579AbF094f1'; // Replace with your actual contract address
 
 interface CategoryCardProps {
   category: Category;

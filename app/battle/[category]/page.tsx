@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import MemeCard from '@/components/meme-card';
+import SubmitMemeDialog from '@/components/submit-meme-dialog';
 import { getBattlesByCategory } from '@/lib/mockData';
 import { Battle, Meme } from '@/lib/types';
 import {
@@ -35,6 +36,8 @@ export default function BattlePage() {
   const [startDate, setStartDate] = useState<string>('');
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [endTime, setEndTime] = useState(0);
+  const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
+  const [upvotingMemeId, setUpvotingMemeId] = useState<string | null>(null);
 
   // Initialize the smart contract
   useEffect(() => {
@@ -45,7 +48,7 @@ export default function BattlePage() {
           await window.ethereum.request({ method: 'eth_requestAccounts' }); // Request account access
           const provider = new ethers.BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-          const contractAddress = '0x50c89cbc4Bde6D08f3f7624B422A9dEff9cCB772';
+          const contractAddress = '0x602f79Fd56F69CdC32C0dA0B58B7c579AbF094f1';
           const contractInstance = new ethers.Contract(
             contractAddress,
             abi,
@@ -187,7 +190,7 @@ export default function BattlePage() {
   };
 
   const handleJoinBattle = () => {
-    router.push(`/submit`);
+    setSubmitDialogOpen(true);
   };
 
   const getStatusBadge = () => {
@@ -244,6 +247,12 @@ export default function BattlePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <SubmitMemeDialog
+        open={submitDialogOpen}
+        onOpenChange={setSubmitDialogOpen}
+        category={category}
+      />
+
       <div className="flex justify-start mb-6">
         <Button onClick={handleBackRouter} className="flex items-center">
           <span className="mr-2">←</span> Back
@@ -348,7 +357,14 @@ export default function BattlePage() {
         {memes.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {memes.map((meme) => (
-              <MemeCard key={meme.id} meme={meme} showCategory={false} />
+              <MemeCard 
+                key={meme.id} 
+                meme={meme} 
+                showCategory={false} 
+                isUpvoting={upvotingMemeId === meme.id}
+                onUpvoteStart={() => setUpvotingMemeId(meme.id)}
+                onUpvoteEnd={() => setUpvotingMemeId(null)}
+              />
             ))}
           </div>
         ) : (
