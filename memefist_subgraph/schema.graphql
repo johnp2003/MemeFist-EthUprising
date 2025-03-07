@@ -65,6 +65,7 @@ type MemeUpvoteCount @entity {
   battleCompleted: BattleCompleted
   winner: Bytes!
   category: String!
+  username: String!
 }
 
 type MemeInfoRequested @entity(immutable: true) {

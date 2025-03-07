@@ -1,52 +1,66 @@
 import { User, Meme, Battle, Category, NFT } from './types';
+import { request, gql } from 'graphql-request';
 
-export const mockUsers: User[] = [
-  {
-    id: '1',
-    username: 'MemeKing',
-    address: '0x1234...5678',
-    totalUpvotes: 1250,
-    totalWins: 5,
-    avatar:
-      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop',
-  },
-  {
-    id: '2',
-    username: 'CryptoJester',
-    address: '0xabcd...efgh',
-    totalUpvotes: 980,
-    totalWins: 3,
-    avatar:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100&auto=format&fit=crop',
-  },
-  {
-    id: '3',
-    username: 'BlockchainHumor',
-    address: '0x9876...5432',
-    totalUpvotes: 750,
-    totalWins: 2,
-    avatar:
-      'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=100&auto=format&fit=crop',
-  },
-  {
-    id: '4',
-    username: 'NFTLaughs',
-    address: '0xijkl...mnop',
-    totalUpvotes: 620,
-    totalWins: 1,
-    avatar:
-      'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=100&auto=format&fit=crop',
-  },
-  {
-    id: '5',
-    username: 'EtherJokes',
-    address: '0xqrst...uvwx',
-    totalUpvotes: 450,
-    totalWins: 0,
-    avatar:
-      'https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=100&auto=format&fit=crop',
-  },
-];
+// Define the response type for the GraphQL query
+interface MemeUpvoteCountResponse {
+  memeUpvoteCounts: {
+    id: string;
+    memeId: string;
+    upvoteAmount: string;
+    winner: string;
+    category: string;
+    username: string;
+    battleCompleted: {
+      winner: string;
+    } | null;
+  }[];
+}
+
+// Subgraph endpoint
+const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/105100/memefist_subgraph/version/latest";
+
+export const fetchUsersFromSubgraph = async (): Promise<User[]> => {
+  const query = gql`
+    query GetMemeUpvoteCounts {
+      memeUpvoteCounts(first: 1000, orderBy: upvoteAmount, orderDirection: desc) {
+        id
+        memeId
+        upvoteAmount
+        winner
+        category
+        username
+        battleCompleted {
+          winner
+        }
+      }
+    }
+  `;
+
+  try {
+    // Type the request response
+    const data: MemeUpvoteCountResponse = await request(SUBGRAPH_URL, query);
+    console.log("Fetched memeUpvoteCounts from subgraph:", data.memeUpvoteCounts);
+
+    // Map MemeUpvoteCount data to User interface
+    const users: User[] = data.memeUpvoteCounts.map((upvote: any) => ({
+      id: upvote.id,
+      username: upvote.username,
+      address: upvote.winner,
+      totalUpvotes: parseInt(upvote.upvoteAmount),
+      totalWins: upvote.battleCompleted ? 1 : 0, // Simplified win count
+      avatar: "/sol-col.png",
+      category: upvote.category || "N/A",
+      winner: upvote.winner || "N/A",
+    }));
+
+    return users;
+  } catch (error) {
+    console.error("Error fetching users from subgraph:", error);
+    return [];
+  }
+};
+
+export const mockUsers: User[] = [];
 
 export const mockCategories: Category[] = [
   {

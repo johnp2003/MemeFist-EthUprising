@@ -1,10 +1,12 @@
 export interface User {
   id: string;
   username: string;
-  address: string;
+  address: string; // Placeholder or derived if possible
   totalUpvotes: number;
-  totalWins: number;
-  avatar: string;
+  totalWins: number; // Derived from battleCompleted (if winner matches)
+  avatar: string; // Placeholder URL
+  category?: string; // Optional, from MemeUpvoteCount
+  winner?: string; // Optional, from MemeUpvoteCount
 }
 
 export interface Meme {

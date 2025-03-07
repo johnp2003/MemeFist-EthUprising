@@ -1,23 +1,57 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import LeaderboardTable from '@/components/leaderboard-table';
+'use client';
+
+import { useEffect, useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import LeaderboardTable from "@/components/leaderboard-table";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { mockUsers } from '@/lib/mockData';
-import { Trophy, TrendingUp, Award } from 'lucide-react';
+} from "@/components/ui/card";
+import { fetchUsersFromSubgraph } from "@/lib/mockData"; // Updated import
+import { User } from "@/lib/types"; // Ensure this is defined
+import { Trophy, TrendingUp, Award } from "lucide-react";
 
 export default function LeaderboardPage() {
-  // Sort users by total upvotes (descending)
-  const usersByUpvotes = [...mockUsers].sort(
-    (a, b) => b.totalUpvotes - a.totalUpvotes
-  );
+  const [usersByUpvotes, setUsersByUpvotes] = useState<User[]>([]);
+  const [usersByWins, setUsersByWins] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sort users by total wins (descending)
-  const usersByWins = [...mockUsers].sort((a, b) => b.totalWins - a.totalWins);
+  useEffect(() => {
+    const loadUsers = async () => {
+      setLoading(true);
+      const users = await fetchUsersFromSubgraph();
+      // Sort by upvotes
+      const sortedByUpvotes = [...users].sort(
+        (a, b) => b.totalUpvotes - a.totalUpvotes
+      );
+      // Sort by wins
+      const sortedByWins = [...users].sort((a, b) => b.totalWins - a.totalWins);
+      setUsersByUpvotes(sortedByUpvotes);
+      setUsersByWins(sortedByWins);
+      setLoading(false);
+    };
+    loadUsers();
+    // Optional: Set up polling or subscription for real-time updates
+    const interval = setInterval(loadUsers, 30000); // Refresh every 30 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
+          <p className="mt-4 text-lg">Loading leaderboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const totalUpvotes = usersByUpvotes.reduce((sum, user) => sum + user.totalUpvotes, 0);
+  const totalMemes = usersByUpvotes.length; // Approximate total memes
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -35,7 +69,7 @@ export default function LeaderboardPage() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mockUsers.length * 2}</div>
+            <div className="text-2xl font-bold">{totalMemes}</div>
             <p className="text-xs text-muted-foreground">
               +12% from last month
             </p>
@@ -48,9 +82,7 @@ export default function LeaderboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {mockUsers
-                .reduce((sum, user) => sum + user.totalUpvotes, 0)
-                .toLocaleString()}
+              {totalUpvotes.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">
               +18% from last month
@@ -59,9 +91,7 @@ export default function LeaderboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Active Battles
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Active Battles</CardTitle>
             <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -97,7 +127,7 @@ export default function LeaderboardPage() {
             <CardHeader>
               <CardTitle>Top Creators by Wins</CardTitle>
               <CardDescription>
-                Users ranked by the number of battles they've won
+                Users ranked by the total number of battle wins
               </CardDescription>
             </CardHeader>
             <CardContent>

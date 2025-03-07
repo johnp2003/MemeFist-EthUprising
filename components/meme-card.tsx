@@ -85,12 +85,11 @@ export default function MemeCard({
         <div className="flex items-center space-x-2">
           <Avatar className="h-8 w-8">
             <AvatarImage
-              src={meme.creator.avatar || '/sol-col.png'}
-              alt={meme.creator.username}
+              src={'/sol-col.png'}
             />
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-sm font-medium">{meme.creator.username}</span>
+            {/* <span className="text-sm font-medium">{meme.creator.username}</span> */}
             <span className="text-xs text-muted-foreground">{timeAgo}</span>
           </div>
         </div>

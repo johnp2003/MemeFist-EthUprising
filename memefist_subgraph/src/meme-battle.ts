@@ -73,6 +73,26 @@ export function handleMemeSubmitted(event: MemeSubmittedEvent): void {
   entity.save()
 }
 
+// Function to generate a pseudo-random username
+const generatedNames: string[] = [];
+
+function generateUsername(memeId: BigInt, timestamp: BigInt): string {
+  const names = ["Adam", "Bryan", "Ivan", "Sean", "Emily", "Diana", "Grace", "Helen", "Jack", "Olivia", "Aiden", "John", "Wei Hup"];
+  
+  let seed = memeId.toI32() + timestamp.toI32();
+  seed = (seed * 1103515245 + 12345) & 0x7fffffff; // Linear congruential generator
+  const index = seed % names.length;
+  const name = names[index];
+  
+  if (!generatedNames.includes(name)) {
+    generatedNames.push(name);
+    return name;
+  }
+  
+  // If the name has been generated before, generate a new one
+  return generateUsername(memeId, timestamp);
+}
+
 export function handleMemeUpvoted(event: MemeUpvotedEvent): void {
   // Create or update the MemeUpvoted entity
   let entity = new MemeUpvoted(
@@ -94,6 +114,7 @@ export function handleMemeUpvoted(event: MemeUpvotedEvent): void {
     // Default values for winner and category (to be updated by BattleCompleted handler)
     memeUpvoteCount.winner = new Bytes(0);
     memeUpvoteCount.category = "";
+    memeUpvoteCount.username = generateUsername(event.params.memeId, event.block.timestamp);
   }
   memeUpvoteCount.upvoteAmount = memeUpvoteCount.upvoteAmount.plus(BigInt.fromI32(1));
   memeUpvoteCount.save();
