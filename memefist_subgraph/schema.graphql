@@ -1,0 +1,55 @@
+type BattleCompleted @entity(immutable: true) {
+  id: Bytes!
+  category: String! # string
+  winner: Bytes! # address
+  winningMemeId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type BattleStarted @entity(immutable: true) {
+  id: Bytes!
+  category: String! # string
+  startTime: BigInt! # uint256
+  endTime: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MemeInfoRequested @entity(immutable: true) {
+  id: Bytes!
+  memeId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MemeSubmitted @entity(immutable: true) {
+  id: Bytes!
+  memeId: BigInt! # uint256
+  creator: Bytes! # address
+  category: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MemeUpvoted @entity(immutable: true) {
+  id: Bytes!
+  memeId: BigInt! # uint256
+  voter: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OwnershipTransferred @entity(immutable: true) {
+  id: Bytes!
+  previousOwner: Bytes! # address
+  newOwner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
