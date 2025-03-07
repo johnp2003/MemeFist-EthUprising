@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ethers } from 'ethers';
 import Image from 'next/image';
+import { toast } from 'react-hot-toast';
 import {
   Card,
   CardContent,
@@ -48,7 +49,7 @@ export default function MemeCard({
       const creatorAddress = memeInfo[0]; // Assuming first return value is the creator address
 
       if (userAddress.toLowerCase() === creatorAddress.toLowerCase()) {
-        alert('You cannot upvote your own meme!');
+        toast.error('You cannot upvote your own meme!');
         return;
       }
 

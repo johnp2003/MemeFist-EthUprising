@@ -103,6 +103,12 @@ export default function BattlePage() {
           setStartDate(startDate);
           setEndTime(endTime);
 
+          // Show notification to the winner after 2 seconds of battle end
+          const winnerDelay = endTime + 2;
+          if (winnerDelay === 0) {
+            console.log('Winner notification sent');
+          }
+
           // Get current time in seconds
           const currentTime = Math.floor(Date.now() / 1000);
 

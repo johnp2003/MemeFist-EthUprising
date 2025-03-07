@@ -14,6 +14,7 @@ import { sepolia, scrollSepolia } from 'wagmi/chains';
 import type { ReactNode } from 'react';
 import { Providers } from './providers';
 import { Head } from 'react-day-picker';
+import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -46,6 +47,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                   disableTransitionOnChange
                 >
                   <Navbar />
+                  <Toaster position="top-right" />
                   <main className="min-h-screen">{children}</main>
                 </ThemeProvider>
               </RainbowKitProvider>
