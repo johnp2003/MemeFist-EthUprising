@@ -24,6 +24,10 @@ export default function CategoryCard({ category }: CategoryCardProps) {
   const [contract, setContract] = useState<ethers.Contract | null>(null);
 
   useEffect(() => {
+    // hardcoded NFT value
+    const fetchedBattles = getBattlesByCategory(category.name);
+    setBattle(fetchedBattles[0] || null);
+    setLoading(false);
     // Initialize contract when the component mounts
     const loadContract = async () => {
       try {
