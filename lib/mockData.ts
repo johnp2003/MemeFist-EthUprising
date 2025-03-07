@@ -113,6 +113,7 @@ export const mockMemes: Meme[] = [
     description: '',
     imageUrl:
       'https://images.unsplash.com/photo-1517960413843-0aee8e2b3285?q=80&w=500&auto=format&fit=crop',
+    metadataURI: '',
     creator: mockUsers[0],
     upvotes: 342,
     downvotes: 21,
@@ -128,6 +129,7 @@ export const mockMemes: Meme[] = [
     description: '',
     imageUrl:
       'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=500&auto=format&fit=crop',
+    metadataURI: '',
     creator: mockUsers[1],
     upvotes: 256,
     downvotes: 15,
@@ -143,6 +145,7 @@ export const mockMemes: Meme[] = [
     description: '',
     imageUrl:
       'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=500&auto=format&fit=crop',
+    metadataURI: '',
     creator: mockUsers[2],
     upvotes: 198,
     downvotes: 12,
@@ -158,6 +161,7 @@ export const mockMemes: Meme[] = [
     description: '',
     imageUrl:
       'https://www.mojohelpdesk.com/blog/wp-content/uploads/beans/images/541dbcb9e685b9bba689e5adeebccc0a-6786bd4.jpg',
+    metadataURI: '',
     creator: mockUsers[3],
     upvotes: 175,
     downvotes: 8,
@@ -170,6 +174,7 @@ export const mockMemes: Meme[] = [
     description: '',
     imageUrl:
       'https://images.unsplash.com/photo-1535378917042-10a22c95931a?q=80&w=500&auto=format&fit=crop',
+    metadataURI: '',
     creator: mockUsers[4],
     upvotes: 132,
     downvotes: 19,
@@ -182,6 +187,7 @@ export const mockMemes: Meme[] = [
     description: '',
     imageUrl:
       'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=500&auto=format&fit=crop',
+    metadataURI: '',
     creator: mockUsers[0],
     upvotes: 210,
     downvotes: 14,
@@ -194,6 +200,7 @@ export const mockMemes: Meme[] = [
     description: '',
     imageUrl:
       'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500&auto=format&fit=crop',
+    metadataURI: '',
     creator: mockUsers[1],
     upvotes: 187,
     downvotes: 9,
@@ -206,6 +213,7 @@ export const mockMemes: Meme[] = [
     description: '',
     imageUrl:
       'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=500&auto=format&fit=crop',
+    metadataURI: '',
     creator: mockUsers[2],
     upvotes: 165,
     downvotes: 7,
@@ -267,7 +275,7 @@ export const mockBattles: Battle[] = [
       mockMemes[4],
       mockMemes[5],
     ],
-    status: 'closed',
+    status: 'ongoing',
     prizePool: 1.2,
     imageUrl: '/technology-battle.png',
     description:
