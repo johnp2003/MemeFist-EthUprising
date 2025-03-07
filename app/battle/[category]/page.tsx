@@ -16,7 +16,7 @@ import {
   Swords,
   LockKeyhole,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, set } from 'date-fns';
 import { ethers } from 'ethers';
 
 // Load ABI from config
@@ -30,6 +30,11 @@ export default function BattlePage() {
   const [memes, setMemes] = useState<Meme[]>([]);
   const [loading, setLoading] = useState(true);
   const [contract, setContract] = useState<any>(null);
+  const [participantCount, setParticipantCount] = useState(0);
+  const [isBattleActive, setBattleActive] = useState(false);
+  const [startDate, setStartDate] = useState<string>('');
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [endTime, setEndTime] = useState(0);
 
   // Initialize the smart contract
   useEffect(() => {
@@ -78,6 +83,40 @@ export default function BattlePage() {
           const memeIds = await contract.getMemesByCategory(getCategoryName);
           console.log('Meme IDs fetched:', memeIds);
 
+          // check whether the battle is currently active or not, if false then dont display page
+          const isBattleActive = await contract.isBattleActive(getCategoryName);
+          setBattleActive(isBattleActive);
+
+          const battleInfo = await contract.getBattleInfo(getCategoryName);
+          console.log('Battle Info:', battleInfo);
+
+          const startTime = Number(battleInfo[0]); // Start time (Unix timestamp)
+          const endTime = Number(battleInfo[1]);   // End time (Unix timestamp)
+
+          // Convert start time to readable date format (e.g., "1 April 2025")
+          const startDate = new Date(startTime * 1000).toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          });
+
+          setStartDate(startDate);
+          setEndTime(endTime);
+
+          // Get current time in seconds
+          const currentTime = Math.floor(Date.now() / 1000);
+
+          // Calculate countdown (end time - now)
+          const timeRemaining = Math.max(endTime - currentTime, 0);
+          setTimeRemaining(timeRemaining);
+
+          // Get total participants count
+          const total_memeIds = memeIds.map((id: ethers.BigNumberish) => Number(id));
+
+          const participantCount = total_memeIds.length;
+          console.log("Total participants:", participantCount);
+          setParticipantCount(participantCount);
+
           // Fetch detailed info for each meme ID
           if (memeIds.length > 0) {
             const memePromises = memeIds.map(
@@ -114,6 +153,17 @@ export default function BattlePage() {
     }
   }, [contract, category]);
 
+  // Countdown Timer
+  useEffect(() => {
+    if (timeRemaining > 0) {
+      const interval = setInterval(() => {
+        setTimeRemaining((prevTime) => Math.max(prevTime - 1, 0));
+      }, 1000);
+
+      return () => clearInterval(interval); // Cleanup on unmount
+    }
+  }, [timeRemaining]);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -135,9 +185,7 @@ export default function BattlePage() {
   };
 
   const getStatusBadge = () => {
-    const now = new Date();
-    const end = new Date(battle?.endDate || '');
-    const hasEnded = now >= end;
+    const hasEnded = timeRemaining === 0;
     const currentStatus = hasEnded ? 'closed' : battle?.status || 'ongoing';
 
     const statusClass = {
@@ -221,15 +269,15 @@ export default function BattlePage() {
             <CardContent className="space-y-3">
               {/* Event Status */}
               <div className="text-sm text-muted-foreground">
-                <p>START: {formatDate(battle.startDate)}</p>
+                <p>START: {formatDate(startDate)}</p>
                 <div className="flex items-center mt-2">
                   <Clock className="h-4 w-4 mr-1" />
-                  {getTimeRemaining(battle.endDate) === 'Time Ended' ? (
+                  {timeRemaining === 0 ? (
                     <span className="text-red-500 font-semibold">
                       Time Ended
                     </span>
                   ) : (
-                    <span>{getTimeRemaining(battle.endDate)} remaining</span>
+                    <span>{timeRemaining} seconds remaining</span>
                   )}
                 </div>
               </div>
@@ -237,10 +285,10 @@ export default function BattlePage() {
               <div className="space-y-4">
                 <div className="flex items-center">
                   <Users className="h-4 w-4 mr-1" />
-                  {battle.memes.length} entries
+                  {participantCount} entries
                 </div>
                 <Progress
-                  value={(battle.memes.length / battle.maxEntries) * 100}
+                  value={(participantCount / battle.maxEntries) * 100}
                   className="w-full"
                 />
                 <p className="text-sm text-muted-foreground text-center">
@@ -256,7 +304,7 @@ export default function BattlePage() {
               {/* Play Button */}
               <div className="flex justify-center">
                 {battle?.status === 'closed' ||
-                getTimeRemaining(battle.endDate) === 'Time Ended' ? (
+                  timeRemaining === 0 ? (
                   <Button
                     size="lg"
                     className="w-3/4 mt-4 rounded-full bg-red-600 hover:bg-red-700 hover:cursor-not-allowed"

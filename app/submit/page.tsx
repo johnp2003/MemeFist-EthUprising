@@ -26,6 +26,7 @@ import { useAccount, useWalletClient } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { ethers } from 'ethers';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 const contractAddress = '0x50c89cbc4Bde6D08f3f7624B422A9dEff9cCB772';
 const contractABI = [
@@ -111,6 +112,7 @@ export default function SubmitPage() {
     }
   };
 
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -183,6 +185,9 @@ export default function SubmitPage() {
         setFile(null);
         setPreviewUrl(null);
         setIsSubmitted(false);
+
+        // Redirect after successful submission
+        router.push('/categories');
       }, 2000);
     } catch (error) {
       console.error('Error submitting meme:', error);

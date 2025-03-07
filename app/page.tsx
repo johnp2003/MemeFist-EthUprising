@@ -55,7 +55,7 @@ export default function Home() {
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl font-bold">Featured Memes</h2>
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/battle/all" className="flex items-center">
+            <Link href="/memes" className="flex items-center">
               View All <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
