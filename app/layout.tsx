@@ -33,7 +33,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <head>
         <title>MemeFist</title>
-        <link rel="icon" href="/swords.png"></link>
+        <link rel="icon" href="/fist-icon.png"></link>
       </head>
       <body className={inter.className}>
         <Providers>
