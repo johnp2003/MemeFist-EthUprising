@@ -24,7 +24,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button size="lg" asChild>
-              <Link href="/submit">Submit Your Meme</Link>
+              <Link href="/categories">Pick Your Battle</Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
               <Link href="/leaderboard">View Leaderboard</Link>
